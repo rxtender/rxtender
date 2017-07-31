@@ -44,33 +44,11 @@ def generate_code(ast, generate):
     generated_sink = {'header':'', 'content':'', 'footer':''}
 
     if 'serialization' in generate:
-        '''
-        env = Environment(
-            loader=PackageLoader(generate['serialization'], '')
-        )
-
-        template = {
-            'header': env.get_template('source.header.tpl'),
-            'footer': env.get_template('source.footer.tpl'),
-            'content': env.get_template('source.content.tpl')
-        }
-        '''
         generated_serialization = generate_feature(get_template(generate['serialization']), streams, items)
-
     if 'sink' in generate:
-        '''
-        env = Environment(
-            loader=PackageLoader(generate['sink'], '')
-        )
-
-        template = {
-            'header': env.get_template('source.header.tpl'),
-            'footer': env.get_template('source.footer.tpl'),
-            'content': env.get_template('source.content.tpl')
-        }
-        '''
-
         generated_sink = generate_feature(get_template(generate['sink']), streams, items)
+    if 'source' in generate:
+        generated_sink = generate_feature(get_template(generate['source']), streams, items)
 
     print(generated_serialization['header'])
     print(generated_sink['header'])
