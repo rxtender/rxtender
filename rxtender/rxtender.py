@@ -41,21 +41,19 @@ def generate_code(ast, generate):
             streams.append(entry['stream'])
 
     generated_serialization = {'header':'', 'content':'', 'footer':''}
-    generated_sink = {'header':'', 'content':'', 'footer':''}
+    generated_stream = {'header':'', 'content':'', 'footer':''}
 
     if 'serialization' in generate:
         generated_serialization = generate_feature(get_template(generate['serialization']), streams, items)
-    if 'sink' in generate:
-        generated_sink = generate_feature(get_template(generate['sink']), streams, items)
-    if 'source' in generate:
-        generated_sink = generate_feature(get_template(generate['source']), streams, items)
+    if 'stream' in generate:
+        generated_stream = generate_feature(get_template(generate['stream']), streams, items)
 
     print(generated_serialization['header'])
-    print(generated_sink['header'])
+    print(generated_stream['header'])
     print(generated_serialization['content'])
-    print(generated_sink['content'])
+    print(generated_stream['content'])
     print(generated_serialization['footer'])
-    print(generated_sink['footer'])
+    print(generated_stream['footer'])
     return
 
 def parse_idl(input):
@@ -72,30 +70,20 @@ def parse_idl(input):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--input-source', help='rxtender definition file of a source stream')
-    parser.add_argument('--input-sink', help='rxtender definition file of a sink stream')
-    #parser.add_argument('-g','--generate',nargs='+', choices=['serialization', 'observable'], required=True)
+    parser.add_argument('--input', help='rxtender definition file of a source stream')
     parser.add_argument('--serialization', help='module used for serialization')
-    parser.add_argument('--source', help='module used for source streams')
-    parser.add_argument('--sink', help='module used for sink streams')
+    parser.add_argument('--stream', help='module used for stream routing')
     args = parser.parse_args()
 
-    source_ast = parse_idl(args.input_source) if args.input_source else None
-    sink_ast = parse_idl(args.input_sink) if args.input_sink else None
+    ast = parse_idl(args.input) if args.input else None
     generate = {}
     if args.serialization:
         generate['serialization'] = args.serialization
-    if args.source:
-        generate['source'] = args.source
-    if args.sink:
-        generate['sink'] = args.sink
+    if args.stream:
+        generate['stream'] = args.stream
 
-    if source_ast:
-        generate_code(source_ast, generate)
-    if sink_ast:
-        generate_code(sink_ast, generate)
-
-    #generate_code(ast, args.generate or [])
+    if ast:
+        generate_code(ast, generate)
 
 
 if __name__ == '__main__':
