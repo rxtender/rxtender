@@ -19,11 +19,11 @@ install_requires = [
 ]
 
 setup(
-    name="RxTender",
-    version='0.1.0',
+    name="rxtender",
+    version='0.1.1',
     url='https://github.com/rxtender/rxtender',
     license='MIT',
-    description="ReativeX oriented IPC and RPC code generator",
+    description="Reactive streams IPC and RPC code generator",
     long_description=description,
     author='Romain Picard',
     author_email='romain.picard@oakbits.com',
