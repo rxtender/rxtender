@@ -46,7 +46,11 @@ def generate_code(ast, generate):
     if 'serialization' in generate:
         generated_serialization = generate_feature(get_template(generate['serialization']), streams, items)
     if 'stream' in generate:
-        generated_stream = generate_feature(get_template(generate['stream']), streams, items)
+        for stream_pkg in generate['stream']:
+            generated_stream_pkg = generate_feature(get_template(stream_pkg), streams, items)
+            generated_stream['header'] += generated_stream_pkg['header']
+            generated_stream['content'] += generated_stream_pkg['content']
+            generated_stream['footer'] += generated_stream_pkg['footer']
 
     print(generated_serialization['header'])
     print(generated_stream['header'])
@@ -72,8 +76,10 @@ def main():
 
     parser.add_argument('--input', help='rxtender definition file of a source stream')
     parser.add_argument('--serialization', help='module used for serialization')
-    parser.add_argument('--stream', help='module used for stream routing')
+    parser.add_argument('--stream', action='append', help='module used for stream routing')
     args = parser.parse_args()
+
+#    print("args: ", repr(args))
 
     ast = parse_idl(args.input) if args.input else None
     generate = {}
