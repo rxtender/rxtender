@@ -29,6 +29,18 @@ def get_template(package_name):
     }
     return template
 
+def append_generated_code(accumulator, code):
+    sections = ['header', 'content', 'footer']
+    for section in sections:
+        accumulator[section].append(code[section])
+    return accumulator
+
+def print_generated_code(accumulator):
+    sections = ['header', 'content', 'footer']
+    for section in sections:
+        for block in accumulator[section]:
+            print(block)
+
 def generate_code(ast, generate):
     items = []
     for entry in ast:
@@ -40,25 +52,20 @@ def generate_code(ast, generate):
         if 'stream' in entry and entry['stream'] is not None:
             streams.append(entry['stream'])
 
-    generated_serialization = {'header':'', 'content':'', 'footer':''}
-    generated_stream = {'header':'', 'content':'', 'footer':''}
+    generated_accumulator = {'header':[], 'content':[], 'footer':[]}
 
+    if 'framing' in generate:
+        generated = generate_feature(get_template(generate['framing']), streams, items)
+        generated_accumulator = append_generated_code(generated_accumulator, generated)
     if 'serialization' in generate:
-        generated_serialization = generate_feature(get_template(generate['serialization']), streams, items)
+        generated = generate_feature(get_template(generate['serialization']), streams, items)
+        generated_accumulator = append_generated_code(generated_accumulator, generated)
     if 'stream' in generate:
         for stream_pkg in generate['stream']:
-            generated_stream_pkg = generate_feature(get_template(stream_pkg), streams, items)
-            generated_stream['header'] += generated_stream_pkg['header']
-            generated_stream['content'] += generated_stream_pkg['content']
-            generated_stream['footer'] += generated_stream_pkg['footer']
+            generated = generate_feature(get_template(stream_pkg), streams, items)
+            generated_accumulator = append_generated_code(generated_accumulator, generated)
 
-    print(generated_serialization['header'])
-    print(generated_stream['header'])
-    print(generated_serialization['content'])
-    print(generated_stream['content'])
-    print(generated_serialization['footer'])
-    print(generated_stream['footer'])
-    return
+    return generated_accumulator
 
 def parse_idl(input):
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -75,6 +82,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--input', help='rxtender definition file of a source stream')
+    parser.add_argument('--framing', help='module used for framing')
     parser.add_argument('--serialization', help='module used for serialization')
     parser.add_argument('--stream', action='append', help='module used for stream routing')
     args = parser.parse_args()
@@ -83,13 +91,15 @@ def main():
 
     ast = parse_idl(args.input) if args.input else None
     generate = {}
+    if args.framing:
+        generate['framing'] = args.framing
     if args.serialization:
         generate['serialization'] = args.serialization
     if args.stream:
         generate['stream'] = args.stream
 
     if ast:
-        generate_code(ast, generate)
+        print_generated_code(generate_code(ast, generate))
 
 
 if __name__ == '__main__':
