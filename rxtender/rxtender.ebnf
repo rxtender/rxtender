@@ -3,11 +3,11 @@
 
 start
     =
-    { expression } $
+    { statement } $
     ;
 
 
-expression
+statement
     =
     | item:item
     | stream:stream
