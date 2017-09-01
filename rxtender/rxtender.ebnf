@@ -20,7 +20,12 @@ item
 
 stream
     =
-    'stream' identifier:identifier '(' {field+:field ','} ')' '->' result_identifier:identifier ';'
+    'stream' identifier:identifier '(' arg:arg ')' '->' result_identifier:identifier ';'
+    ;
+
+arg
+    =
+    {@+:field {',' @+:field}*}*
     ;
 
 field

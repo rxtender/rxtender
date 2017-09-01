@@ -67,16 +67,18 @@ def generate_code(ast, generate):
 
     return generated_accumulator
 
-def parse_idl(input):
+def parse_idl(definitions):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     grammar = open(dir_path + '/rxtender.ebnf').read()
-    definitions = open(input).read()
-
     parser = tatsu.compile(grammar)
     ast = parser.parse(definitions)
 
-    #pprint(ast, width=20, indent=4)
+#    pprint(ast, width=20, indent=4)
     return ast
+
+def parse_idl_file(input):
+    return parse_idl(open(input).read())
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -89,7 +91,7 @@ def main():
 
 #    print("args: ", repr(args))
 
-    ast = parse_idl(args.input) if args.input else None
+    ast = parse_idl_file(args.input) if args.input else None
     generate = {}
     if args.framing:
         generate['framing'] = args.framing
