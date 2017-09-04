@@ -20,7 +20,7 @@ install_requires = [
 
 setup(
     name="rxtender",
-    version='0.3.0',
+    version='0.4.0',
     url='https://github.com/rxtender/rxtender',
     license='MIT',
     description="Reactive streams IPC and RPC code generator",

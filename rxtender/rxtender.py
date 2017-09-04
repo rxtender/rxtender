@@ -6,11 +6,11 @@ from pprint import pprint
 
 from jinja2 import Environment, PackageLoader
 
-def generate_feature(template, streams, items):
+def generate_feature(template, streams, structs):
     generated_code = {
-    'header':  template['header'].render(streams=streams, items=items),
-    'content': template['content'].render(streams=streams, items=items),
-    'footer': template['footer'].render(streams=streams, items=items)
+    'header':  template['header'].render(streams=streams, structs=structs),
+    'content': template['content'].render(streams=streams, structs=structs),
+    'footer': template['footer'].render(streams=streams, structs=structs)
     }
     return generated_code
 
@@ -42,27 +42,25 @@ def print_generated_code(accumulator):
             print(block)
 
 def generate_code(ast, generate):
-    items = []
-    for entry in ast:
-        if 'item' in entry and entry['item'] is not None:
-            items.append(entry['item'])
-
+    structs = []
     streams = []
     for entry in ast:
-        if 'stream' in entry and entry['stream'] is not None:
+        if 'struct' in entry and entry['struct'] is not None:
+            structs.append(entry['struct'])
+        elif 'stream' in entry and entry['stream'] is not None:
             streams.append(entry['stream'])
 
     generated_accumulator = {'header':[], 'content':[], 'footer':[]}
 
     if 'framing' in generate:
-        generated = generate_feature(get_template(generate['framing']), streams, items)
+        generated = generate_feature(get_template(generate['framing']), streams, structss)
         generated_accumulator = append_generated_code(generated_accumulator, generated)
     if 'serialization' in generate:
-        generated = generate_feature(get_template(generate['serialization']), streams, items)
+        generated = generate_feature(get_template(generate['serialization']), streams, structs)
         generated_accumulator = append_generated_code(generated_accumulator, generated)
     if 'stream' in generate:
         for stream_pkg in generate['stream']:
-            generated = generate_feature(get_template(stream_pkg), streams, items)
+            generated = generate_feature(get_template(stream_pkg), streams, structs)
             generated_accumulator = append_generated_code(generated_accumulator, generated)
 
     return generated_accumulator
@@ -71,7 +69,13 @@ def parse_idl(definitions):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     grammar = open(dir_path + '/rxtender.ebnf').read()
     parser = tatsu.compile(grammar)
-    ast = parser.parse(definitions)
+
+    ast = None
+    try:
+        ast = parser.parse(definitions)
+    except tatsu.exceptions.FailedParse as e:
+        print(e)
+        pass
 
 #    pprint(ast, width=20, indent=4)
     return ast

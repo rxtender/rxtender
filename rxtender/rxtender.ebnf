@@ -9,13 +9,13 @@ start
 
 statement
     =
-    | item:item
+    | struct:struct
     | stream:stream
     ;
 
-item
+struct
     =
-    'item' identifier:  identifier '{' {field+:field ';'} '}'
+    'struct' identifier:  identifier '{' {field+:field ';'} '}'
     ;
 
 stream

@@ -2,11 +2,11 @@ from unittest import TestCase
 
 from rxtender.rxtender import parse_idl
 
-class ParserTestCase(TestCase):
+class ParserStreamTestCase(TestCase):
 
     def test_no_arg_stream(self):
         rxt = 'stream Foo() -> BarItem;'
-        expected_ast = [   {   'item': None,
+        expected_ast = [   {   'struct': None,
         'stream': {   'arg': [],
                       'identifier': 'Foo',
                       'result_identifier': 'BarItem'}}]
@@ -15,7 +15,7 @@ class ParserTestCase(TestCase):
 
     def test_single_arg_stream(self):
         rxt = 'stream Foo(one: i32) -> BarItem;'
-        expected_ast = [   {   'item': None,
+        expected_ast = [   {   'struct': None,
         'stream': {   'arg': [   {   'identifier': 'one',
                                      'type': 'i32'}],
                       'identifier': 'Foo',
@@ -25,7 +25,7 @@ class ParserTestCase(TestCase):
 
     def test_multi_arg_stream(self):
         rxt = 'stream Foo(one: i32, two: i32, three: i32) -> BarItem;'
-        expected_ast = [   {   'item': None,
+        expected_ast = [   {   'struct': None,
         'stream': {   'arg': [   {   'identifier': 'one',
                                      'type': 'i32'},
                                  {   'identifier': 'two',
