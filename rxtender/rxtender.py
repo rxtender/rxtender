@@ -35,11 +35,15 @@ def append_generated_code(accumulator, code):
         accumulator[section].append(code[section])
     return accumulator
 
-def print_generated_code(accumulator):
+def save_generated_code(filename, accumulator):
+    file = open(filename, 'w')
     sections = ['header', 'content', 'footer']
     for section in sections:
         for block in accumulator[section]:
-            print(block)
+            file.write(block)
+            file.write('\n')
+
+    file.close()
 
 def generate_code(ast, generate):
     structs = []
@@ -88,6 +92,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--input', help='rxtender definition file of a source stream')
+    parser.add_argument('--output', help='file where generated code is saved')
     parser.add_argument('--framing', help='module used for framing')
     parser.add_argument('--serialization', help='module used for serialization')
     parser.add_argument('--stream', action='append', help='module used for stream routing')
@@ -104,8 +109,8 @@ def main():
     if args.stream:
         generate['stream'] = args.stream
 
-    if ast:
-        print_generated_code(generate_code(ast, generate))
+    if ast and args.output:
+        save_generated_code(args.output, generate_code(ast, generate))
 
 
 if __name__ == '__main__':
