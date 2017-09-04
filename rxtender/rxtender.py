@@ -57,7 +57,7 @@ def generate_code(ast, generate):
     generated_accumulator = {'header':[], 'content':[], 'footer':[]}
 
     if 'framing' in generate:
-        generated = generate_feature(get_template(generate['framing']), streams, structss)
+        generated = generate_feature(get_template(generate['framing']), streams, structs)
         generated_accumulator = append_generated_code(generated_accumulator, generated)
     if 'serialization' in generate:
         generated = generate_feature(get_template(generate['serialization']), streams, structs)
