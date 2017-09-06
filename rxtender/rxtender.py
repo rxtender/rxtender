@@ -1,6 +1,7 @@
 import os
 import argparse
 import tatsu
+from tatsu.util import re
 from codecs import open
 from pprint import pprint
 
@@ -69,7 +70,7 @@ def generate_code(ast, generate):
 
     return generated_accumulator
 
-def parse_idl(definitions):
+def parse_idl(definitions, filename=''):
     dir_path = os.path.dirname(os.path.realpath(__file__))
     grammar = open(dir_path + '/rxtender.ebnf').read()
     parser = tatsu.compile(grammar)
@@ -78,14 +79,24 @@ def parse_idl(definitions):
     try:
         ast = parser.parse(definitions)
     except tatsu.exceptions.FailedParse as e:
-        print(e)
+        info = e.buf.line_info(e.pos)
+        text = info.text.rstrip()
+        leading = re.sub(r'[^\t]', ' ', text)[:info.col]
+        leading = leading.expandtabs()
+        print('{}({}:{}) {}:\n{}\n{}^'.format(
+            filename,
+            info.line + 1, info.col + 1,
+            e.message.rstrip(),
+            text.expandtabs(),
+            leading
+        ))
         pass
 
 #    pprint(ast, width=20, indent=4)
     return ast
 
 def parse_idl_file(input):
-    return parse_idl(open(input).read())
+    return parse_idl(open(input).read(), input)
 
 
 def main():

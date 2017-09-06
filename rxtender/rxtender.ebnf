@@ -20,7 +20,7 @@ struct
 
 stream
     =
-    'stream' identifier:identifier '(' arg:arg ')' '->' result_identifier:identifier ';'
+    'stream' identifier:identifier '(' arg:arg ')' '->' 'Stream' '<' item_identifier:identifier ',' error_identifier:identifier '>' ';'
     ;
 
 arg
